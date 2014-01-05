@@ -35,5 +35,8 @@ namespace MyAddressBook.Models
 
         [StringLength(500, MinimumLength = 1)]
         public string PersonalImageUrl { get; set; }
+
+        public virtual ICollection<AddressBookContact> AddressBookContacts { get; set; }
+
     }
 }

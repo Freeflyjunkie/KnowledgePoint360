@@ -26,7 +26,7 @@ namespace MyAddressBook.Controllers
 
         public JsonResult AddressBook_Read()
         {
-            IEnumerable<AddressBook> addressbooks = GetAddressBooks();
+            IEnumerable<AddressBookViewModel> addressbooks = GetAddressBooks();
             return Json(addressbooks, JsonRequestBehavior.AllowGet);
         }       
 
@@ -38,42 +38,34 @@ namespace MyAddressBook.Controllers
 
         public JsonResult Contact_Read([DataSourceRequest]DataSourceRequest request, int contactid)
         {
-            IEnumerable<Contact> addresses = GetContact(contactid);
+            IEnumerable<ContactAddressViewModel> addresses = GetContact(contactid);
             return Json(addresses.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
         }
 
-        private IEnumerable<AddressBook> GetAddressBooks()
+        private IEnumerable<AddressBookViewModel> GetAddressBooks()
         {
-            return db.AddressBooks;
+            return db.AddressBooks
+                .Select(ab => new AddressBookViewModel { AddressBookID = ab.AddressBookID, Description = ab.Description });                
         }
 
         private IEnumerable<ContactViewModel> GetContacts(int selectedAddressBook)
-        {                        
+        {            
             return db.AddressBookContacts
-                .Where(abc => abc.AddressBookID == selectedAddressBook)
-                .Include(abc => abc.Contact) 
+                .Where(abc => abc.AddressBookID == selectedAddressBook)                
                 .Select(abc => new ContactViewModel
                     {
                         ContactID = abc.Contact.ContactID,
                         FirstName = abc.Contact.FirstName,
                         LastName = abc.Contact.LastName,
                         PersonalImageUrl = abc.Contact.PersonalImageUrl
-                    });
-
-            //return db.AddressBookContacts
-            //    .Where(ab => ab.AddressBookID == selectedAddressBook)
-            //    .Join(db.Contacts, abc => abc.ContactID, c => c.ContactID, (abc, c) => new ContactViewModel
-            //                                                                            {                                                                                            
-            //                                                                                ContactID = c.ContactID,
-            //                                                                                FirstName = c.FirstName,
-            //                                                                                LastName = c.LastName,
-            //                                                                                PersonalImageUrl = c.PersonalImageUrl
-            //                                                                            });                    
+                    });        
         }
 
-        private IEnumerable<Contact> GetContact(int contactid)
+        private IEnumerable<ContactAddressViewModel> GetContact(int contactid)
         {
-            return db.Contacts.Where(c => c.ContactID == contactid);
+            return db.Contacts
+                .Where(c => c.ContactID == contactid)
+                .Select(c => new ContactAddressViewModel { Address = c.Address, City = c.City, Country = c.Country, Postcode = c.Postcode });
         }
 
         protected override void Dispose(bool disposing)

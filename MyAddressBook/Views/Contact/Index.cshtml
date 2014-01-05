@@ -59,11 +59,10 @@
 
 
 <script id="template" type="text/kendo-tmpl">
-        @(Html.Kendo().Grid<MyAddressBook.Models.Contact>()
+        @(Html.Kendo().Grid<MyAddressBook.ViewModels.ContactAddressViewModel>()
             .Name("grid_#=ContactID#")
             .Columns(columns =>
-            {
-                columns.Bound(c => c.ContactID).Visible(false);
+            {                
                 columns.Bound(c => c.Address);
                 columns.Bound(c => c.City);
                 columns.Bound(c => c.Postcode);

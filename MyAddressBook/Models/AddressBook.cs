@@ -13,5 +13,7 @@ namespace MyAddressBook.Models
 
         [StringLength(50, MinimumLength = 1)]
         public string Description { get; set; }
+
+        public virtual ICollection<AddressBookContact> AddressBookContacts { get; set; }
     }
 }
