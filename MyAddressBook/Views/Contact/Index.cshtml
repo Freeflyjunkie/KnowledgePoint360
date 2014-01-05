@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "My Address Book";
+}
+
+<script>
+        var ddlItem;
+       function additionalData(e) {
+                return { selectedAddressBook: ddlItem }
+        }
+    
+        function onChange() {
+                ddlItem = this.value();
+                var grid = $("#contacts").data("kendoGrid");
+                grid.dataSource.read();
+            };
+    </script>
+<br />
+<div>
+        @(Html.Kendo().ComboBox()
+        .Name("addressbooks")
+        .HtmlAttributes(new { style = "width:300px" })
+        .Placeholder("Select Address Book...")
+        .DataTextField("Description")
+        .DataValueField("AddressBookID")
+        .Filter(FilterType.Contains)
+        .DataSource(source =>
+        {
+            source.Read(read =>
+            {
+                read.Action("AddressBook_Read", "Contact");
+            });
+        })
+        .Events(e =>
+            {
+                e.Change("onChange");
+            })
+    )
+    
+</div>
+<br />
+<div>
+        @(Html.Kendo().Grid<MyAddressBook.ViewModels.ContactViewModel>()
+        .Name("contacts")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.ContactID).Visible(false);
+            columns.Bound(c => c.PersonalImageUrl).ClientTemplate("<img src='#: PersonalImageUrl #' height='90' width='65'></img>").Width(75).Title("");
+            columns.Bound(c => c.FirstName).Width(190);
+            columns.Bound(c => c.LastName);
+        })
+        .ClientDetailTemplateId("template")
+        .Sortable()
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Read(read => read.Action("Contacts_Read", "Contact").Data("additionalData")))
+    )
+    
+</div>
+
+
+<script id="template" type="text/kendo-tmpl">
+        @(Html.Kendo().Grid<MyAddressBook.Models.Contact>()
+            .Name("grid_#=ContactID#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.ContactID).Visible(false);
+                columns.Bound(c => c.Address);
+                columns.Bound(c => c.City);
+                columns.Bound(c => c.Postcode);
+                columns.Bound(c => c.Country);
+            })
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .PageSize(5)
+                .Read(read => read.Action("Contact_Read", "Contact", new { contactid = "#=ContactID#" }))
+            )
+            .ToClientTemplate()
+    )
+</script>
