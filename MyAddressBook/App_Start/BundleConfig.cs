@@ -4,12 +4,17 @@ using System.Web.Optimization;
 namespace MyAddressBook
 {
     public class BundleConfig
-    {
+    {        
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
-        {
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+        {            
+            bundles.UseCdn = true; //enable CDN support            
+            var jqueryCdnPath = "http://ajax.gooogleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js";
+            bundles.Add(new ScriptBundle("~/bundles/jquery", jqueryCdnPath).Include("~/Scripts/jquery-{version}.js"));            
+
+            // Code removed for clarity.
+            //bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
+            //            "~/Scripts/jquery-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
@@ -29,11 +34,11 @@ namespace MyAddressBook
 
             bundles.Add(new ScriptBundle("~/bundles/kendo").Include(
                        "~/Scripts/kendo/2013.3.1119/kendo.web.min.js"));
-            
+
             bundles.Add(new StyleBundle("~/Content/kendo/css").Include(
                         "~/Content/kendo/2013.3.1119/kendo.common-bootstrap.min.css",
                         "~/Content/kendo/2013.3.1119/kendo.bootstrap.min.css"));
-            
+
             bundles.IgnoreList.Clear();
 
         }

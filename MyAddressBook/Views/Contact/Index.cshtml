@@ -2,21 +2,205 @@
     ViewBag.Title = "My Address Book";
 }
 
-<script>
-        var ddlItem;
-       function additionalData(e) {
-                return { selectedAddressBook: ddlItem }
-        }
-    
-        function onChange() {
-                ddlItem = this.value();
-                var grid = $("#contacts").data("kendoGrid");
-                grid.dataSource.read();
-            };
-    </script>
-<br />
-<div>
-        @(Html.Kendo().ComboBox()
+@(Html.Kendo().Window()
+    .Name("window")
+    .Title("")
+    .Animation(true)
+    .Animation(animation =>
+        {
+            animation.Open(effect =>
+                {
+                    effect.Duration(AnimationDuration.Slow);
+                    effect.Zoom(ZoomDirection.In);
+                });
+
+            animation.Close(effect =>
+                {
+                    effect.Duration(AnimationDuration.Slow);
+                    effect.Zoom(ZoomDirection.Out);
+                });
+        })
+    .Draggable()
+    .Resizable()
+    .Width(600)
+    .Modal(false)
+    .Visible(false)
+    .Width(400)
+    .Content("loading movie star information...")
+    .Actions(actions => actions.Close())
+)
+<style type="text/css">
+    .MiniText {
+        font-size: 13px;
+        font-style: italic;
+        cursor: pointer;
+        color: red;
+        padding-top: 5px;
+        height: 30px
+    }
+
+    .ShadowBoxing {
+        box-shadow: 5px 5px 5px #888888; 
+        border-radius: 30px;
+    }
+
+    .ShadowText {
+        font-size: 20px;
+        text-shadow: 5px 5px 5px #888888;
+    }
+
+    .HeaderHeight {
+        height: 30px;
+    }
+
+    #MovieStarList {
+        padding-bottom: 50px;
+        clear: both;
+    }
+
+    .ImageList {
+        float: left;
+        padding-right: 20px;
+    }
+
+    .ImageBorder {
+        border: 1px outset gray;
+    }
+
+    .StaticAddressBook {
+        clear: both;
+        position: absolute;
+        top: 280px;
+        width: 800px;
+    }
+</style>
+
+<script type="text/javascript">
+    $(DocumentIsReady);
+    function DocumentIsReady() {
+
+        // Hide Contact Grid
+        $('#contacts').hide();
+
+        // Wire All Events
+        WireEvents();
+    }
+
+    function WireEvents() {
+        // Build Guess Who Menu
+        var stars = $('img.ImageBorder');
+        stars
+            .attr(
+                {
+                    title: 'Who Am I? <br/> Click to find out!',
+                })        
+            .css({
+                height: 150,               
+                opacity: .50,
+                cursor: 'pointer'
+            })
+            .addClass('ShadowBoxing')
+            .on({
+                click: function (event) {
+                    var window = $("#window").data("kendoWindow");
+                    window.close();
+                    GetWindowData(event.target.id);
+                },
+
+                mouseenter: function () {
+                    $(this).animate(
+                        {
+                            opacity: 100,
+                            height: 160
+                        })
+                },
+
+                mouseleave: function () {
+                    $(this).animate(
+                        {
+                            opacity: .50,
+                            height: 150
+                        })
+                }
+            });
+
+        // Build Hide / Show
+        var hideShowHeader = $('#hideHeader');
+        hideShowHeader
+            .on({
+                click: function () {
+                    $('#AddressBook').toggleClass('StaticAddressBook')
+                    $('#MovieStarList').slideToggle('slow');
+
+                    if ($('#hideHeader').text() == 'hide guessing game') {
+                        $('#hideHeader').text('show guessing game');
+                    }
+                    else {
+                        $('#hideHeader').text('hide guessing game');
+                    }
+                }
+            });
+    }
+
+    var ddlItem;
+    function additionalData(e) {
+        return { selectedAddressBook: ddlItem }
+    }
+
+    function onChange() {
+        $('#contacts').show();
+        ddlItem = this.value();
+        var grid = $("#contacts").data("kendoGrid");
+        grid.dataSource.read();
+    };
+
+    function GetWindowData(controlID) {
+        var data = { imgControlID: controlID };
+
+        $.get('/Contact/GetStarInformation/', data, function (data) {
+            var window = $("#window").data("kendoWindow");
+            window.content($(data).find('[title="Description"]').html());
+            window.title($(data).find('[title="Name"]').html());
+            window.center();
+            window.open();
+        });
+    }
+
+</script>
+<div class="MiniText">
+    <span id="hideHeader">hide guessing game</span>
+</div>
+<div id="MovieStarList">
+    <div id="MovieStarHeader" class="ShadowText">
+        Guess the Movie Stars In My Address Book
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgRickMartin" alt="" src="http://imag.lecturalia.com/img/autor/ricky-martin-9579.jpg" />
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgHelenHunt" alt="" src="http://ia.media-imdb.com/images/M/MV5BMTM1OTk1ODIwMV5BMl5BanBnXkFtZTcwMTA0MTIwOQ&#64;&#64;._V1._SX100_SY131_.jpg" />
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgJodieFoster" alt="" src="http://www.gralon.net/cinema/acteur/photo-jodie-foster-1065.gif" />
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgSallyField" alt="" src="http://www.pathe.nl/thumb/120x160/gfx_content/profiel/sallyfield120.jpg" />
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgBradPitt" alt="" src="http://www.moviepilot.de/files/images/0487/1903/Brad_Pitt_B4051_poster_large.JPG" />
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgSandraBullcock" alt="" src="http://www.ellemagazin.hu/Root/Shared/Pictures/2013/08/01/sandra-bullock(148x195).png" />
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgBillNye" alt="" src="http://ts4.explicit.bing.net/th?id=H.4999502046168627&pid=1.7" />
+    </div>
+    <div class="ImageList">
+        <img class="ImageBorder" id="imgJackNicholson" alt="" src="http://image.gala.de/v1/cms/uP/jack-nicholson_4748574-portrait-standardPortraitTeaser_2.jpg?v=6787873" />
+    </div>
+</div>
+<div id="AddressBook" class="StaticAddressBook">
+    @(Html.Kendo().ComboBox()
         .Name("addressbooks")
         .HtmlAttributes(new { style = "width:300px" })
         .Placeholder("Select Address Book...")
@@ -35,34 +219,37 @@
                 e.Change("onChange");
             })
     )
-    
-</div>
-<br />
-<div>
-        @(Html.Kendo().Grid<MyAddressBook.ViewModels.ContactViewModel>()
+    <br />
+    <br />
+    @(Html.Kendo().Grid<MyAddressBook.ViewModels.ContactViewModel>()
         .Name("contacts")
         .Columns(columns =>
         {
             columns.Bound(c => c.ContactID).Visible(false);
-            columns.Bound(c => c.PersonalImageUrl).ClientTemplate("<img src='#: PersonalImageUrl #' height='90' width='65'></img>").Width(75).Title("");
+            columns.Bound(c => c.PersonalImageUrl).ClientTemplate("<img class='ShadowBoxing' src='#: PersonalImageUrl #' height='90' width='65'></img>").Width(75).Title("Picture");
             columns.Bound(c => c.FirstName).Width(190);
             columns.Bound(c => c.LastName);
         })
-        .ClientDetailTemplateId("template")
-        .Sortable()
+        .ClientDetailTemplateId("template")        
         .DataSource(dataSource => dataSource
             .Ajax()
             .Read(read => read.Action("Contacts_Read", "Contact").Data("additionalData")))
+
     )
-    
+    @(Html.Kendo().Tooltip()
+            .For("#MovieStarList")
+            .Filter("img")
+            .Position(TooltipPosition.Top)
+            .Width(110)
+    )
+
 </div>
 
-
 <script id="template" type="text/kendo-tmpl">
-        @(Html.Kendo().Grid<MyAddressBook.ViewModels.ContactAddressViewModel>()
+    @(Html.Kendo().Grid<MyAddressBook.ViewModels.ContactAddressViewModel>()
             .Name("grid_#=ContactID#")
             .Columns(columns =>
-            {                
+            {
                 columns.Bound(c => c.Address);
                 columns.Bound(c => c.City);
                 columns.Bound(c => c.Postcode);
