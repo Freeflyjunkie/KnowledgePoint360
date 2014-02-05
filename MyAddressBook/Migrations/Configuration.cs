@@ -31,7 +31,7 @@ namespace MyAddressBook.Migrations
                 new Contact { FirstName = "Sandra",   LastName = "Bullock", 
                     Address = "90 Main Street", City="Clinton", Country="USA", Postcode="07198" , PersonalImageUrl="http://www.ellemagazin.hu/Root/Shared/Pictures/2013/08/01/sandra-bullock(148x195).png"},
                 new Contact { FirstName = "Bill",   LastName = "Nye", 
-                    Address = "478 Grove Street", City="Elizabeth", Country="USA", Postcode="08765" , PersonalImageUrl="http://ts4.explicit.bing.net/th?id=H.4999502046168627&pid=1.7"},
+                    Address = "478 Grove Street", City="Elizabeth", Country="USA", Postcode="08765" , PersonalImageUrl="http://www.jhu.edu/news/commence08/releases/images/nye1.jpg"},
                 new Contact { FirstName = "Jack",   LastName = "Nicholson", 
                     Address = "49 Grove Street", City="Elizabeth", Country="USA", Postcode="08765" , PersonalImageUrl="http://image.gala.de/v1/cms/uP/jack-nicholson_4748574-portrait-standardPortraitTeaser_2.jpg?v=6787873"},
             };
